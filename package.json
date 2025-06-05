@@ -1,23 +1,264 @@
 {
   "name": "lira-free-theme",
   "displayName": "Lira",
-  "description": "A free theme engine because who charges for something like this?",
-  "version": "0.0.1",
-  "engines": {
-    "vscode": "^1.100.0"
+  "description": "A completely free and customizable dark theme for Visual Studio Code with beautiful syntax highlighting and extensive customization options.",
+  "version": "0.0.3",
+  "publisher": "Lirasoft",
+  "author": "Jean Baudrillard",
+  "galleryBanner": {
+    "color": "#263238",
+    "theme": "dark"
   },
-  "repository": "https://github.com/arcalumis/lira-free-theme",
-  "categories": [
-    "Other",
-    "Themes"
+  "files": [
+    "out",
+    "src/themes",
+    "src/icons",
+    "src/assets",
+    "README.md"
   ],
-  "activationEvents": [],
+  "repository": "",
+  "engines": {
+    "node": ">=18",
+    "vscode": "^1.100.0",
+    "pnpm": ">=8.0.0"
+  },
+  "categories": [
+    "Themes",
+    "Other"
+  ],
+  "keywords": [
+    "VSCode",
+    "Themes",
+    "Color Theme",
+    "Icon Theme",
+    "Lira",
+    "Lira Theme",
+    "Lira Icons",
+    "Free Theme",
+    "Dark Theme",
+    "Customizable"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "extensionKind": [
+    "ui",
+    "workspace"
+  ],
   "main": "./out/extension.js",
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": true
+    }
+  },
   "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "Lira Theme",
+      "properties": {
+        "liraTheme.accent": {
+          "order": 1,
+          "type": "string",
+          "default": "Teal",
+          "enum": [
+            "Teal",
+            "Coral",
+            "White",
+            "Tomato",
+            "Orange",
+            "Yellow",
+            "Acid Lime",
+            "Lime",
+            "Bright Teal",
+            "Cyan",
+            "Blue",
+            "Indigo",
+            "Purple",
+            "Pink"
+          ],
+          "description": "Set the accent color used across the interface and icons.",
+          "scope": "window"
+        },
+        "liraTheme.customAccent": {
+          "order": 2,
+          "type": "string",
+          "markdownDescription": "The custom accent **will override** the `#liraTheme.accent#` color. Run clear accent command or manually remove the value.",
+          "scope": "window",
+          "pattern": "^$|^#([A-Fa-f0-9]{6})$",
+          "patternErrorMessage": "Invalid color format. Enter a valid 6 digits hex color."
+        },
+        "liraTheme.useOutlinedIcons": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Use outlined folder icons instead of filled icons.",
+          "scope": "window"
+        },
+        "liraTheme.showBorders": {
+          "type": "boolean",
+          "default": false,
+          "scope": "window",
+          "markdownDescription": "Show borders in some areas of the editor for better visual separation."
+        },
+        "liraTheme.contrastedTabs": {
+          "type": "boolean",
+          "default": false,
+          "scope": "window",
+          "markdownDescription": "Add more contrast to tabs by using a different background for the tabs bar."
+        },
+        "liraTheme.solidLineHighlight": {
+          "type": "boolean",
+          "default": false,
+          "scope": "window",
+          "markdownDescription": "Render a solid background highlight for the active line instead of a border."
+        },
+        "liraTheme.hidesExplorerArrows": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Hide arrow icons in the file explorer for a cleaner look.",
+          "scope": "window"
+        },
+        "liraTheme.hidesShadows": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Hide shadows across the interface for a completely flat look.",
+          "scope": "window"
+        }
+      }
+    },
     "commands": [
       {
-        "command": "lira-free-theme.helloWorld",
-        "title": "Eat my shorts!"
+        "command": "liraTheme.accentPicker",
+        "title": "Select Accent Color",
+        "category": "Lira"
+      },
+      {
+        "command": "liraTheme.clearAccent",
+        "title": "Clear Accent Color",
+        "category": "Lira"
+      },
+      {
+        "command": "liraTheme.showBorders",
+        "title": "Toggle Borders",
+        "category": "Lira"
+      },
+      {
+        "command": "liraTheme.showContrastedTabs",
+        "title": "Toggle Contrasted Tabs",
+        "category": "Lira"
+      },
+      {
+        "command": "liraTheme.useSolidLineHighlight",
+        "title": "Toggle Solid Line Highlight",
+        "category": "Lira"
+      },
+      {
+        "command": "liraTheme.hidesShadows",
+        "title": "Toggle Shadows",
+        "category": "Lira"
+      },
+      {
+        "command": "liraTheme.hideExplorerArrows",
+        "title": "Toggle Explorer Arrows",
+        "category": "Lira"
+      },
+      {
+        "command": "liraTheme.useOutlinedIcons",
+        "title": "Toggle Outlined Icons",
+        "category": "Lira"
+      }
+    ],
+    "themes": [
+      {
+        "label": "Lira Teal",
+        "path": "./src/themes/Lira-Theme-Teal.json",
+        "uiTheme": "vs-dark"
+      },
+      {
+        "label": "Lira Teal High Contrast",
+        "path": "./src/themes/Lira-Theme-Teal-High-Contrast.json",
+        "uiTheme": "vs-dark"
+      },
+      {
+        "label": "Lira Graphene",
+        "path": "./src/themes/Lira-Theme-Graphene.json",
+        "uiTheme": "vs-dark"
+      },
+      {
+        "label": "Lira Graphene High Contrast",
+        "path": "./src/themes/Lira-Theme-Graphene-High-Contrast.json",
+        "uiTheme": "vs-dark"
+      },
+      {
+        "label": "Lira Palenight",
+        "path": "./src/themes/Lira-Theme-Palenight.json",
+        "uiTheme": "vs-dark"
+      },
+      {
+        "label": "Lira Palenight High Contrast",
+        "path": "./src/themes/Lira-Theme-Palenight-High-Contrast.json",
+        "uiTheme": "vs-dark"
+      },
+      {
+        "label": "Lira Ocean",
+        "path": "./src/themes/Lira-Theme-Ocean.json",
+        "uiTheme": "vs-dark"
+      },
+      {
+        "label": "Lira Ocean High Contrast",
+        "path": "./src/themes/Lira-Theme-Ocean-High-Contrast.json",
+        "uiTheme": "vs-dark"
+      },
+      {
+        "label": "Lira Deepforest",
+        "path": "./src/themes/Lira-Theme-Deepforest.json",
+        "uiTheme": "vs-dark"
+      },
+      {
+        "label": "Lira Deepforest High Contrast",
+        "path": "./src/themes/Lira-Theme-Deepforest-High-Contrast.json",
+        "uiTheme": "vs-dark"
+      },
+      {
+        "label": "Lira Carbon",
+        "path": "./src/themes/Lira-Theme-Carbon.json",
+        "uiTheme": "vs-dark"
+      },
+      {
+        "label": "Lira Carbon High Contrast",
+        "path": "./src/themes/Lira-Theme-Carbon-High-Contrast.json",
+        "uiTheme": "vs-dark"
+      }
+    ],
+    "iconThemes": [
+      {
+        "id": "lira-icons-teal",
+        "label": "Lira Icons Teal",
+        "path": "./src/themes/Lira-Icons-Teal.json"
+      },
+      {
+        "id": "lira-icons-graphene",
+        "label": "Lira Icons Graphene",
+        "path": "./src/themes/Lira-Icons-Graphene.json"
+      },
+      {
+        "id": "lira-icons-palenight",
+        "label": "Lira Icons Palenight",
+        "path": "./src/themes/Lira-Icons-Palenight.json"
+      },
+      {
+        "id": "lira-icons-ocean",
+        "label": "Lira Icons Ocean",
+        "path": "./src/themes/Lira-Icons-Ocean.json"
+      },
+      {
+        "id": "lira-icons-deepforest",
+        "label": "Lira Icons Deepforest",
+        "path": "./src/themes/Lira-Icons-Deepforest.json"
+      },
+      {
+        "id": "lira-icons-carbon",
+        "label": "Lira Icons Carbon",
+        "path": "./src/themes/Lira-Icons-Carbon.json"
       }
     ]
   },
