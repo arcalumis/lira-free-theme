@@ -1,71 +1,122 @@
-# lira-free-theme README
+# Lira - Free VS Code Theme
 
-This is the README for your extension "lira-free-theme". After writing up a brief description, we recommend including the following sections.
+A completely free and customizable dark theme for Visual Studio Code. Lira offers beautiful syntax highlighting, extensive customization options, and a rich set of folder icons - all without any licensing restrictions.
 
-## Features
+## ✨ Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+### 🎨 Multiple Theme Variants
 
-For example if there is an image subfolder under your extension project workspace:
+- **6 Built-in Variants**: Teal, Carbon, Deepforest, Graphene, Ocean, and Palenight
+- **High Contrast Support**: Each variant includes a high contrast version
+- **Consistent Design**: Carefully crafted color schemes optimized for readability
 
-\!\[feature X\]\(images/feature-x.png\)
+### 🎯 Customizable Accent Colors
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+- **14 Predefined Colors**: Teal, Coral, White, Tomato, Orange, Yellow, Acid Lime, Lime, Bright Teal, Cyan, Blue, Indigo, Purple, Pink
+- **Custom Colors**: Set any hex color as your accent
+- **Live Preview**: See changes instantly in the status bar
+- **Easy Access**: Click the paintcan icon in the status bar to change colors
 
-## Requirements
+### 📁 Rich Icon Theming
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+- **Folder Icons**: Over 47 specialized folder types (api, assets, components, config, docs, etc.)
+- **Two Styles**: Choose between filled or outlined folder icons
+- **Accent Matching**: Folder icons automatically match your selected accent color
+- **File Icons**: Comprehensive file type icons for better file recognition
 
-## Extension Settings
+### ⚙️ Advanced Customization
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+- **Borders**: Toggle UI element borders on/off
+- **Shadows**: Hide or show widget shadows
+- **Tab Contrast**: Enable contrasted tab backgrounds
+- **Line Highlights**: Choose between subtle or solid line highlighting
+- **Explorer Arrows**: Hide or show folder collapse arrows
 
-For example:
+### 🚀 Easy to Use
+
+- **Status Bar Integration**: Quick access to theme settings
+- **Command Palette**: All features accessible via VS Code commands
+- **Real-time Updates**: Changes apply immediately without restart
+- **No Configuration Required**: Works great out of the box
+
+## 🛠️ Installation
+
+1. Open VS Code
+2. Go to Extensions (`Ctrl+Shift+X` or `Cmd+Shift+X`)
+3. Search for "Lira"
+4. Click Install
+5. Select your preferred Lira theme from the Command Palette (`Ctrl+Shift+P` → "Preferences: Color Theme")
+
+## 🎨 Usage
+
+### Changing Accent Colors
+
+- **Status Bar**: Click the paintcan icon in the status bar
+- **Command Palette**: Run "Lira: Select Accent Color"
+- **Custom Colors**: Choose "Use custom accent" and enter a hex color
+
+### Theme Customization
+
+Access all customization options through the Command Palette:
+
+- `Lira: Toggle Borders`
+- `Lira: Toggle Shadows`
+- `Lira: Toggle Contrasted Tabs`
+- `Lira: Toggle Line Highlights`
+- `Lira: Toggle Explorer Arrows`
+
+### Icon Styles
+
+- Switch between filled and outlined folder icons
+- All folder icons automatically match your accent color
+- Specialized icons for common project folders
+
+## ⚙️ Extension Settings
 
 This extension contributes the following settings:
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+- `liraTheme.accent`: The selected accent color
+- `liraTheme.customAccent`: Custom hex color for accent
+- `liraTheme.showBorders`: Enable/disable UI borders
+- `liraTheme.hidesShadows`: Hide widget shadows
+- `liraTheme.contrastedTabs`: Enable contrasted tab backgrounds
+- `liraTheme.solidLineHighlight`: Use solid line highlighting
+- `liraTheme.hidesExplorerArrows`: Hide explorer folder arrows
+- `liraTheme.useOutlinedIcons`: Use outlined folder icons
 
-## Known Issues
+## 🚫 No Restrictions
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+Lira is completely free with no:
 
-## Release Notes
+- ❌ Trial periods
+- ❌ License keys
+- ❌ Feature limitations
+- ❌ Watermarks
+- ❌ Ads or promotions
 
-Users appreciate release notes as you update your extension.
+## 🐛 Known Issues
 
-### 1.0.0
+None currently reported. Please file issues on the GitHub repository if you encounter any problems.
 
-Initial release of ...
+## 📝 Release Notes
 
-### 1.0.1
+### 0.0.1
 
-Fixed issue #.
+- Initial release of Lira theme
+- 6 theme variants with high contrast support
+- 14 accent colors + custom color support
+- Complete folder icon set with accent matching
+- Advanced customization options
+- Status bar integration
 
-### 1.1.0
+## 🤝 Contributing
 
-Added features X, Y, and Z.
+Contributions are welcome! Please feel free to submit issues and enhancement requests.
+
+## 📄 License
+
+This project is completely free and open source.
 
 ---
 
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+**Enjoy coding with Lira!** 🎉

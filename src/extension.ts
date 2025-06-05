@@ -1,5 +1,25 @@
 import * as vscode from "vscode";
 
+// Type definitions
+interface AccentOption {
+  label: string;
+  picked?: boolean;
+  iconPath: vscode.Uri | vscode.ThemeIcon;
+}
+
+interface ThemeIconDefinition {
+  iconPath: string;
+}
+
+interface ThemeConfig {
+  iconDefinitions: { [key: string]: ThemeIconDefinition };
+  hidesExplorerArrows?: boolean;
+}
+
+interface AccentColors {
+  [key: string]: string;
+}
+
 // Theme Configuration
 const FOLDER_NAMES = [
   "vscode",
@@ -52,7 +72,7 @@ const THEME_CONFIG = {
   foldersStyles: ["filled", "outlined"],
   accents: {
     Teal: "#80CBC4",
-    Vira: "#E9A581",
+    Coral: "#E9A581",
     White: "#FFFFFF",
     Tomato: "#F85044",
     Orange: "#FF7042",
@@ -159,7 +179,7 @@ const THEME_CONFIG = {
         _folder_root_open: {
           iconPath: "../icons/folders/filled/folder_root_open.svg",
         },
-        ...Object.fromEntries(
+        ...(Object.fromEntries(
           FOLDER_NAMES.flatMap((name) => [
             [
               `_folder_${name}`,
@@ -170,7 +190,7 @@ const THEME_CONFIG = {
               { iconPath: `../icons/folders/filled/folder_${name}_open.svg` },
             ],
           ])
-        ),
+        ) as { [key: string]: ThemeIconDefinition }),
       },
     },
   },
@@ -183,12 +203,12 @@ const THEME_CONFIG = {
     Deepforest: "#2E483C",
   },
   themeIconVariants: {
-    Teal: "vira-icons-teal",
-    Graphene: "vira-icons-graphene",
-    Palenight: "vira-icons-palenight",
-    Ocean: "vira-icons-ocean",
-    Carbon: "vira-icons-carbon",
-    Deepforest: "vira-icons-deepforest",
+    Teal: "lira-icons-teal",
+    Graphene: "lira-icons-graphene",
+    Palenight: "lira-icons-palenight",
+    Ocean: "lira-icons-ocean",
+    Carbon: "lira-icons-carbon",
+    Deepforest: "lira-icons-deepforest",
   },
   variantsIcons: [
     "_folder_dark",
@@ -209,9 +229,6 @@ const STRINGS = {
     select_accent: "Select the accent color to use",
   },
   accentButtonTooltip: "Set the accent color",
-  activateViraThemeTitle: "Activate Vira Theme",
-  activateViraThemeDescription: "Activate Vira Theme",
-  manageActivations: "Manage activations",
   feedbacks: {
     no_valid_color: {
       title: "Only 6 or 8 digits hex colors",
@@ -221,32 +238,14 @@ const STRINGS = {
     invalidHexAlpha: "Alpha must be between 0 and 1",
     no_accent: {
       title: "",
-      message: "No vira theme accent found",
+      message: "No accent found",
     },
-    trial_activated: "Vira Theme: enjoy your 7-days trial period.",
-    trial_has_expired: "Vira Theme: trial has expired.",
-    active_trial: "Vira Theme: evaluation period will end in",
-    activate_or_remove_message:
-      "Activate your license key to continue using the extension. NOTE: if you don't activate Vira Theme, it'll be removed and you'll need to reinstall it to enter your license.",
-    trial_hours_left: "hours.",
-    trial_days_left: "days.",
-    license_server_error: "Vira Theme: license server error.",
-    license_activation_failed: "Vira Theme activation failed.",
-    license_activation_success: "Vira Theme activated successfully.",
-    license_no_longer_valid: "Vira Theme: license is no longer valid.",
-    license_activation_too_soon:
-      "Vira Theme: wait 30s before activating again.",
-    no_internet_connection:
-      "No internet connection. Vira Theme can't be activated.",
-    empty_license:
-      "You entered an empty string. Vira Theme can't be activated.",
-    license_validation: "invalid format",
   },
 };
 
 // Utility Functions
 function getConfiguration(key: string): any {
-  return vscode.workspace.getConfiguration().get(`viraTheme.${key}`);
+  return vscode.workspace.getConfiguration().get(`liraTheme.${key}`);
 }
 
 function slugify(text: string): string {
@@ -258,7 +257,7 @@ function isValidHexColor(color: string): boolean {
 }
 
 function hasConfiguration(key: string): boolean {
-  return vscode.workspace.getConfiguration().has(`viraTheme.${key}`);
+  return vscode.workspace.getConfiguration().has(`liraTheme.${key}`);
 }
 
 async function updateConfiguration(
@@ -268,7 +267,7 @@ async function updateConfiguration(
 ): Promise<void> {
   await vscode.workspace
     .getConfiguration()
-    .update(`viraTheme.${key}`, value, target);
+    .update(`liraTheme.${key}`, value, target);
 }
 
 async function clearConfiguration(
@@ -277,14 +276,14 @@ async function clearConfiguration(
   for (const key of keys) {
     await vscode.workspace
       .getConfiguration()
-      .update(`viraTheme.${key}`, undefined, true);
+      .update(`liraTheme.${key}`, undefined, true);
   }
 }
 
 // Theme File Operations
 async function updateThemeFiles(
   context: vscode.ExtensionContext,
-  updater: (theme: any) => any
+  updater: (theme: ThemeConfig) => ThemeConfig
 ): Promise<void> {
   const themesPath = vscode.Uri.joinPath(
     vscode.Uri.file(context.extensionPath),
@@ -293,11 +292,11 @@ async function updateThemeFiles(
   const files = await vscode.workspace.fs.readDirectory(themesPath);
 
   for (const [fileName] of files) {
-    if (fileName.startsWith("Vira-Icons")) {
+    if (fileName.startsWith("Lira-Icons")) {
       const filePath = vscode.Uri.joinPath(themesPath, fileName);
       const fileData = await vscode.workspace.fs.readFile(filePath);
       const themeContent = new TextDecoder().decode(fileData);
-      const themeObject = { ...JSON.parse(themeContent) };
+      const themeObject = { ...JSON.parse(themeContent) } as ThemeConfig;
       const updatedTheme = updater(themeObject);
       const updatedData = new TextEncoder().encode(
         JSON.stringify(updatedTheme)
@@ -345,7 +344,9 @@ async function updateIconsAccentColor(
 
   await updateThemeFiles(context, (theme) => {
     accentableIcons.forEach((iconName) => {
-      const iconDef = theme.iconDefinitions[iconName];
+      const iconDef = theme.iconDefinitions[iconName] as
+        | ThemeIconDefinition
+        | undefined;
       if (iconDef) {
         const { iconPath } = iconDef;
         const newAccentPath = iconPath.includes(".accent.")
@@ -379,7 +380,7 @@ async function createCustomAccentIcons(
   );
   const accentSuffix = `.accent.${customColor}.svg`;
   const previousCustomAccent = context.globalState.get(
-    "viraTheme.iconsCustomAccent"
+    "liraTheme.iconsCustomAccent"
   ) as string | null;
   let previousAccentSuffix = null;
 
@@ -389,7 +390,7 @@ async function createCustomAccentIcons(
 
   for (const style of foldersStyles) {
     for (const iconName of accentableIcons) {
-      const iconPath = iconDefinitions[iconName].iconPath.replace(
+      const iconPath = (iconDefinitions as any)[iconName].iconPath.replace(
         "filled/",
         `${style}/`
       );
@@ -423,7 +424,9 @@ async function createCustomAccentIcons(
 
   await updateThemeFiles(context, (theme) => {
     accentableIcons.forEach((iconName) => {
-      const iconDef = theme.iconDefinitions[iconName];
+      const iconDef = theme.iconDefinitions[iconName] as
+        | ThemeIconDefinition
+        | undefined;
       if (iconDef) {
         const { iconPath } = iconDef;
         const newPath = iconPath.includes(".accent.")
@@ -435,7 +438,7 @@ async function createCustomAccentIcons(
     return theme;
   });
 
-  await context.globalState.update("viraTheme.iconsCustomAccent", customColor);
+  await context.globalState.update("liraTheme.iconsCustomAccent", customColor);
 }
 
 async function updateIconsAccent(
@@ -458,15 +461,15 @@ async function updateIconsAccent(
 
 // Package Information
 function getPackageInfo(): any {
-  const extension = vscode.extensions.getExtension("vira.vsc-vira-theme");
+  const extension = vscode.extensions.getExtension("lira.lira-free-theme");
   if (!extension) {
-    throw new Error("Extension with ID vira.vsc-vira-theme not found");
+    throw new Error("Extension with ID lira.lira-free-theme not found");
   }
   return extension.packageJSON;
 }
 
 // Theme Detection
-function isViraThemeActive(): boolean {
+function isLiraThemeActive(): boolean {
   const themeSettings = [
     "workbench.preferredLightColorTheme",
     "workbench.preferredDarkColorTheme",
@@ -481,22 +484,24 @@ function isViraThemeActive(): boolean {
   const settingKey = autoDetect
     ? themeSettings[activeTheme.kind - 1]
     : "workbench.colorTheme";
-  const currentTheme = vscode.workspace.getConfiguration().get(settingKey);
+  const currentTheme = vscode.workspace.getConfiguration().get(settingKey) as
+    | string
+    | undefined;
 
   return currentTheme
     ? getPackageInfo().contributes.themes.some((theme: any) =>
-        currentTheme.includes(theme.label)
+        (currentTheme as string).includes(theme.label)
       )
     : false;
 }
 
-function isViraIconThemeActive(): boolean {
+function isLiraIconThemeActive(): boolean {
   const iconTheme = vscode.workspace
     .getConfiguration()
-    .get("workbench.iconTheme");
+    .get("workbench.iconTheme") as string | undefined;
   return iconTheme
     ? getPackageInfo().contributes.iconThemes.some((theme: any) =>
-        iconTheme.includes(theme.id)
+        (iconTheme as string).includes(theme.id)
       )
     : false;
 }
@@ -588,8 +593,8 @@ function removeColorProperties(
   colorCustomizations: any
 ): void {
   Object.keys(properties).forEach((key) => {
-    if (colorCustomizations["[Vira*]"]?.[key]) {
-      delete colorCustomizations["[Vira*]"][key];
+    if (colorCustomizations["[Lira*]"]?.[key]) {
+      delete colorCustomizations["[Lira*]"][key];
     }
   });
 }
@@ -602,210 +607,6 @@ async function updateWorkbenchColors(colorCustomizations: any): Promise<void> {
   } catch (error) {
     await vscode.window.showErrorMessage(String(error));
   }
-}
-
-// License Management Functions
-async function activateLicense(licenseKey: string): Promise<any> {
-  try {
-    const timestamp = Date.now();
-    const instanceName =
-      `${vscode.env.appName}.${vscode.env.appHost}.${vscode.env.machineId}.${timestamp}`
-        .replace(/\s+/g, "-")
-        .toLowerCase();
-    const productName = getPackageInfo().name;
-
-    const response = await fetch("https://l.vira.build/api/activate", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Vira-Theme": vscode.env.machineId,
-      },
-      body: JSON.stringify({
-        license_key: licenseKey,
-        instance_name: instanceName,
-        product_id: productName,
-      }),
-    });
-
-    if (response.status === 500) {
-      return null;
-    }
-
-    const result = await response.json();
-    return result.activated === undefined ? null : result;
-  } catch {
-    return null;
-  }
-}
-
-async function validateLicense(
-  licenseKey: string,
-  instanceId: string
-): Promise<any> {
-  try {
-    const response = await fetch("https://l.vira.build/api/validate", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Vira-Theme": vscode.env.machineId,
-      },
-      body: JSON.stringify({
-        license_key: licenseKey,
-        instance_id: instanceId,
-      }),
-    });
-
-    if (response.status === 500) {
-      return null;
-    }
-
-    const result = await response.json();
-    return result.validated === undefined ? null : result;
-  } catch {
-    return null;
-  }
-}
-
-async function setTrialContext(isTrial: boolean): Promise<void> {
-  await vscode.commands.executeCommand(
-    "setContext",
-    "viraTheme.isTrial",
-    isTrial
-  );
-}
-
-async function storeLicenseData(
-  context: vscode.ExtensionContext,
-  licenseKey: string,
-  instanceId: string
-): Promise<void> {
-  const timestamp = Date.now();
-  const encodedData = btoa(`${licenseKey}|${instanceId}|${timestamp}`);
-  await context.secrets.store("viraTheme.licenseKey", encodedData);
-}
-
-async function checkInternetConnection(): Promise<boolean> {
-  const testUrls = [
-    "https://www.google.com/favicon.ico",
-    "https://www.baidu.com/favicon.ico",
-    "https://www.cloudflare.com/favicon.ico",
-    "https://www.microsoft.com/favicon.ico",
-    "https://www.apple.com/favicon.ico",
-    "https://www.amazon.com/favicon.ico",
-    "https://www.qq.com/favicon.ico",
-    "https://www.weibo.com/favicon.ico",
-    "https://www.jd.com/favicon.ico",
-    "https://vira.build/favicon.ico",
-  ];
-
-  for (const url of testUrls) {
-    try {
-      await fetch(url, { method: "HEAD", mode: "no-cors" });
-      return true;
-    } catch {}
-  }
-  return false;
-}
-
-async function promptForLicenseKey(): Promise<string | undefined> {
-  return await vscode.window.showInputBox({
-    title: "Activate Vira Theme",
-    prompt: "Activate Vira Theme",
-    ignoreFocusOut: true,
-    validateInput(value: string) {
-      return value.length < 18 || /\s/.test(value)
-        ? STRINGS.feedbacks.license_validation
-        : null;
-    },
-  });
-}
-
-async function handleLicenseActivation(
-  context: vscode.ExtensionContext,
-  licenseKey: string
-): Promise<boolean> {
-  const result = await activateLicense(licenseKey);
-
-  if (!result) {
-    vscode.window.showErrorMessage(STRINGS.feedbacks.license_server_error);
-    return false;
-  }
-
-  if (result.activated) {
-    const { license_key, instance_id } = result;
-    await storeLicenseData(context, license_key, instance_id);
-    await setTrialContext(false);
-    vscode.window.showInformationMessage(
-      STRINGS.feedbacks.license_activation_success
-    );
-    return true;
-  }
-
-  let errorMessage = STRINGS.feedbacks.license_activation_failed;
-  if (result.reason) {
-    errorMessage += ` (${result.reason})`;
-  }
-
-  const action = await vscode.window.showErrorMessage(
-    errorMessage,
-    "Manage activations"
-  );
-  if (action === "Manage activations") {
-    vscode.env.openExternal(
-      vscode.Uri.parse("https://app.lemonsqueezy.com/my-orders")
-    );
-  }
-
-  return false;
-}
-
-async function licenseInputBoxCommand(
-  context: vscode.ExtensionContext
-): Promise<boolean> {
-  const licenseKey = await promptForLicenseKey();
-
-  if (!licenseKey) {
-    vscode.window.showWarningMessage(STRINGS.feedbacks.empty_license);
-    return false;
-  }
-
-  if (!(await checkInternetConnection())) {
-    vscode.window.showWarningMessage(STRINGS.feedbacks.no_internet_connection);
-    return false;
-  }
-
-  const lastActivationTry = context.globalState.get(
-    "viraTheme.latestActivationTry"
-  ) as number | undefined;
-  if (
-    lastActivationTry !== undefined &&
-    Date.now() - lastActivationTry < 30000
-  ) {
-    vscode.window.showWarningMessage(
-      STRINGS.feedbacks.license_activation_too_soon
-    );
-    return false;
-  }
-
-  await context.globalState.update("viraTheme.latestActivationTry", Date.now());
-  return await handleLicenseActivation(context, licenseKey);
-}
-
-async function uninstallExtension(): Promise<void> {
-  try {
-    await vscode.commands.executeCommand(
-      "workbench.extensions.uninstallExtension",
-      "vira.vsc-vira-theme"
-    );
-  } catch {}
-
-  try {
-    await vscode.commands.executeCommand(
-      "_workbench.extensions.action.cleanUpExtensionsFolder"
-    );
-  } catch {}
-
-  vscode.commands.executeCommand("workbench.action.reloadWindow");
 }
 
 // UI Functions
@@ -836,11 +637,13 @@ async function showAccentPicker(
   // Add special options
   accentOptions.unshift({
     label: "Use custom accent",
+    picked: false,
     iconPath: new vscode.ThemeIcon("paintcan"),
   });
 
   accentOptions.push({
     label: "Clear accent",
+    picked: false,
     iconPath: new vscode.ThemeIcon("close"),
   });
 
@@ -848,24 +651,32 @@ async function showAccentPicker(
     placeHolder: STRINGS.placeholders.select_accent,
   });
 
-  if (!selectedAccent) return;
+  if (!selectedAccent) {
+    return;
+  }
 
   const existingColorCustomizations = vscode.workspace
     .getConfiguration()
     .get("workbench.colorCustomizations");
-  if (!existingColorCustomizations) return;
+  if (!existingColorCustomizations) {
+    return;
+  }
 
-  const { "[Vira*]": viraColors } = existingColorCustomizations as any;
-  if (selectedAccent.label === "" && viraColors) return;
+  const { "[Lira*]": liraColors } = existingColorCustomizations as any;
+  if (selectedAccent.label === "" && liraColors) {
+    return;
+  }
 
   if (selectedAccent.label === "Use custom accent") {
     const customColor = await promptForCustomAccent();
-    if (!customColor || customColor === "") return;
+    if (!customColor || customColor === "") {
+      return;
+    }
     await updateConfiguration("customAccent", customColor);
   }
 
   if (selectedAccent.label === "Clear accent") {
-    await vscode.commands.executeCommand("viraTheme.clearAccent");
+    await vscode.commands.executeCommand("liraTheme.clearAccent");
   }
 
   if (
@@ -899,7 +710,7 @@ async function updateColorCustomizations(): Promise<void> {
   const solidLineHighlight = getConfiguration("solidLineHighlight") ?? false;
   const hidesShadows = getConfiguration("hidesShadows") ?? false;
 
-  if (!isViraThemeActive()) {
+  if (!isLiraThemeActive()) {
     return;
   }
 
@@ -910,7 +721,7 @@ async function updateColorCustomizations(): Promise<void> {
     return;
   }
 
-  const { "[Vira*]": viraColors } = existingColorCustomizations as any;
+  const { "[Lira*]": liraColors } = existingColorCustomizations as any;
   const {
     accents,
     colorCustomizations: {
@@ -927,8 +738,8 @@ async function updateColorCustomizations(): Promise<void> {
 
   if (customAccent) {
     selectedAccentColor = customAccent;
-  } else if (accentColor) {
-    selectedAccentColor = accents[accentColor];
+  } else if (accentColor && accents[accentColor as keyof typeof accents]) {
+    selectedAccentColor = accents[accentColor as keyof typeof accents];
   }
 
   if (selectedAccentColor) {
@@ -950,8 +761,8 @@ async function updateColorCustomizations(): Promise<void> {
 
   const newColorCustomizations = {
     ...existingColorCustomizations,
-    "[Vira*]": {
-      ...viraColors,
+    "[Lira*]": {
+      ...liraColors,
       ...accentsProperties,
       ...bordersProperties,
       ...contrastedTabsProperties,
@@ -989,7 +800,7 @@ function createStatusBarItem(): void {
 
   const updateVisibility = () => {
     if (statusBarItem) {
-      if (isViraThemeActive() || isViraIconThemeActive()) {
+      if (isLiraThemeActive() || isLiraIconThemeActive()) {
         statusBarItem.show();
       } else {
         statusBarItem.hide();
@@ -998,7 +809,9 @@ function createStatusBarItem(): void {
   };
 
   const updateStatusBar = () => {
-    if (!statusBarItem) return;
+    if (!statusBarItem) {
+      return;
+    }
 
     const accentColor = getConfiguration("accent") ?? "Teal";
     const customAccent = getConfiguration("customAccent");
@@ -1007,7 +820,10 @@ function createStatusBarItem(): void {
     }`;
 
     statusBarItem.text = displayText + " ";
-    statusBarItem.color = customAccent || THEME_CONFIG.accents[accentColor];
+    statusBarItem.color =
+      customAccent ||
+      THEME_CONFIG.accents[accentColor as keyof typeof THEME_CONFIG.accents] ||
+      THEME_CONFIG.accents.Teal;
     updateVisibility();
 
     setTimeout(() => {
@@ -1020,8 +836,10 @@ function createStatusBarItem(): void {
   const initialAccent = getConfiguration("accent") ?? "Teal";
   statusBarItem.text = `$(paintcan) ${initialAccent}`;
   statusBarItem.tooltip = "Set the accent color";
-  statusBarItem.command = "viraTheme.accentPicker";
-  statusBarItem.color = THEME_CONFIG.accents[initialAccent];
+  statusBarItem.command = "liraTheme.accentPicker";
+  statusBarItem.color =
+    THEME_CONFIG.accents[initialAccent as keyof typeof THEME_CONFIG.accents] ||
+    THEME_CONFIG.accents.Teal;
   updateVisibility();
 
   vscode.workspace.onDidChangeConfiguration((event) => {
@@ -1036,8 +854,8 @@ function createStatusBarItem(): void {
 
     const affectsIcon = event.affectsConfiguration("workbench.iconTheme");
     const affectsAccent =
-      event.affectsConfiguration("viraTheme.accent") ||
-      event.affectsConfiguration("viraTheme.customAccent");
+      event.affectsConfiguration("liraTheme.accent") ||
+      event.affectsConfiguration("liraTheme.customAccent");
 
     if (affectsAccent || affectsTheme || affectsIcon) {
       setTimeout(updateStatusBar, 200);
@@ -1049,7 +867,7 @@ async function initializeColorCustomizations(
   context: vscode.ExtensionContext
 ): Promise<void> {
   const storedCustomizations = context.globalState.get(
-    "viraTheme.colorCustomizations"
+    "liraTheme.colorCustomizations"
   ) as string[] | undefined;
   const { colorCustomizations } = THEME_CONFIG;
 
@@ -1068,21 +886,23 @@ async function initializeColorCustomizations(
       const existingCustomizations = vscode.workspace
         .getConfiguration()
         .get("workbench.colorCustomizations");
-      if (!existingCustomizations) return;
+      if (!existingCustomizations) {
+        return;
+      }
 
-      const { "[Vira*]": viraColors, ...otherColors } =
+      const { "[Lira*]": liraColors, ...otherColors } =
         existingCustomizations as any;
-      const cleanedViraColors = viraColors ? { ...viraColors } : {};
+      const cleanedLiraColors = liraColors ? { ...liraColors } : {};
 
       obsoleteKeys.forEach((key) => {
-        if (cleanedViraColors[key]) {
-          delete cleanedViraColors[key];
+        if (cleanedLiraColors[key]) {
+          delete cleanedLiraColors[key];
         }
       });
 
       const updatedCustomizations = {
         ...otherColors,
-        "[Vira*]": { ...cleanedViraColors },
+        "[Lira*]": { ...cleanedLiraColors },
       };
 
       await updateWorkbenchColors(updatedCustomizations);
@@ -1090,7 +910,7 @@ async function initializeColorCustomizations(
   }
 
   await context.globalState.update(
-    "viraTheme.colorCustomizations",
+    "liraTheme.colorCustomizations",
     allColorKeys
   );
   await updateColorCustomizations();
@@ -1111,162 +931,17 @@ async function initializeColorCustomizations(
   });
 }
 
-async function initializeTrial(
-  context: vscode.ExtensionContext
-): Promise<void> {
-  if ((await context.secrets.get("viraTheme.licenseKey")) !== undefined) {
-    return;
-  }
-
-  const trialActivation = await context.secrets.get(
-    "viraTheme.trialActivation"
-  );
-
-  if (trialActivation === undefined) {
-    const trialStart = btoa(new Date().toUTCString());
-    await context.secrets.store("viraTheme.trialActivation", trialStart);
-    await setTrialContext(true);
-    vscode.window.showInformationMessage(STRINGS.feedbacks.trial_activated);
-  } else {
-    const trialStartDate = new Date(atob(trialActivation));
-    const hasInternet = await checkInternetConnection();
-    const trialEndDate = new Date(trialStartDate);
-    trialEndDate.setDate(trialStartDate.getDate() + 7);
-    const currentDate = new Date();
-
-    if (currentDate > trialEndDate) {
-      const action = await vscode.window.showInformationMessage(
-        STRINGS.feedbacks.trial_has_expired,
-        {
-          modal: true,
-          detail: STRINGS.feedbacks.activate_or_remove_message,
-        },
-        hasInternet ? "Activate" : ""
-      );
-
-      if (action === "Activate") {
-        if (
-          !(await vscode.commands.executeCommand("viraTheme.licenseInputBox"))
-        ) {
-          await uninstallExtension();
-        }
-      } else {
-        await uninstallExtension();
-      }
-    } else {
-      let trialMessage = STRINGS.feedbacks.active_trial;
-      const hoursLeft = Math.ceil(
-        (trialEndDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60)
-      );
-      const daysLeft = Math.ceil(hoursLeft / 24);
-
-      if (daysLeft === 1) {
-        trialMessage += ` ${hoursLeft} ${STRINGS.feedbacks.trial_hours_left}`;
-      } else {
-        trialMessage += ` ${daysLeft} ${STRINGS.feedbacks.trial_days_left}`;
-      }
-
-      await setTrialContext(true);
-      vscode.window.showInformationMessage(trialMessage);
-
-      setTimeout(async () => {
-        await initializeTrial(context);
-      }, 24 * 60 * 60 * 1000); // Check again in 24 hours
-    }
-  }
-}
-
-async function validateExistingLicense(
-  context: vscode.ExtensionContext
-): Promise<void> {
-  const licenseData = await context.secrets.get("viraTheme.licenseKey");
-  if (licenseData === undefined) {
-    return;
-  }
-
-  const decodedData = atob(licenseData);
-  const [licenseKey, instanceId, timestampStr] = decodedData.split("|");
-  const licenseTimestamp = new Date(Number(timestampStr));
-  const checkDate = new Date(licenseTimestamp);
-
-  // Add random variation to check time
-  const randomDays = Math.floor(Math.random() * 5);
-  const randomHours = Math.floor(Math.random() * 23);
-  const randomMinutes = Math.floor(Math.random() * 59);
-
-  checkDate.setDate(licenseTimestamp.getDate() + 20 + randomDays);
-  checkDate.setHours(randomHours);
-  checkDate.setMinutes(randomMinutes);
-
-  if (Date.now() > checkDate.getTime()) {
-    const validateLicenseNow = async () => {
-      const validationResult = await validateLicense(licenseKey, instanceId);
-
-      if (!validationResult) {
-        setTimeout(async () => {
-          await validateLicenseNow();
-        }, 3 * 60 * 60 * 1000); // Retry in 3 hours
-        return;
-      }
-
-      if (validationResult.validated) {
-        await storeLicenseData(context, licenseKey, instanceId);
-      } else {
-        await context.secrets.delete("viraTheme.licenseKey");
-        const action = await vscode.window.showInformationMessage(
-          STRINGS.feedbacks.license_no_longer_valid,
-          {
-            modal: true,
-            detail: STRINGS.feedbacks.activate_or_remove_message,
-          },
-          "Activate"
-        );
-
-        if (action === "Activate") {
-          if (
-            !(await vscode.commands.executeCommand("viraTheme.licenseInputBox"))
-          ) {
-            await uninstallExtension();
-          }
-        } else {
-          await uninstallExtension();
-        }
-      }
-    };
-
-    if (!(await checkInternetConnection())) {
-      setTimeout(async () => {
-        await validateLicenseNow();
-      }, 3 * 60 * 60 * 1000); // Retry in 3 hours
-      return;
-    }
-
-    await validateLicenseNow();
-  }
-}
-
-function setupSecretListener(context: vscode.ExtensionContext): void {
-  context.secrets.onDidChange(async (event) => {
-    if (
-      event.key === "viraTheme.licenseKey" &&
-      (await context.secrets.get("viraTheme.licenseKey")) !== undefined
-    ) {
-      await setTrialContext(false);
-    }
-  });
-}
-
 // Configuration change handlers
 async function handleAccentChange(
   event: vscode.ConfigurationChangeEvent
 ): Promise<void> {
   if (
-    event.affectsConfiguration("viraTheme.accent") ||
-    event.affectsConfiguration("viraTheme.customAccent")
+    event.affectsConfiguration("liraTheme.accent") ||
+    event.affectsConfiguration("liraTheme.customAccent")
   ) {
     setTimeout(async () => {
-      await vscode.commands.executeCommand("viraTheme.updateAccent");
-      await vscode.commands.executeCommand("viraTheme.updateIconsAccent");
+      await vscode.commands.executeCommand("liraTheme.updateAccent");
+      await vscode.commands.executeCommand("liraTheme.updateIconsAccent");
     }, 200);
   }
 }
@@ -1275,12 +950,12 @@ async function handleBordersChange(
   event: vscode.ConfigurationChangeEvent
 ): Promise<void> {
   if (
-    isViraThemeActive() &&
-    event.affectsConfiguration("viraTheme.showBorders")
+    isLiraThemeActive() &&
+    event.affectsConfiguration("liraTheme.showBorders")
   ) {
     setTimeout(async () => {
       await vscode.commands.executeCommand(
-        "viraTheme.showBorders",
+        "liraTheme.showBorders",
         getConfiguration("showBorders") ?? false
       );
     }, 200);
@@ -1291,12 +966,12 @@ async function handleTabsChange(
   event: vscode.ConfigurationChangeEvent
 ): Promise<void> {
   if (
-    isViraThemeActive() &&
-    event.affectsConfiguration("viraTheme.contrastedTabs")
+    isLiraThemeActive() &&
+    event.affectsConfiguration("liraTheme.contrastedTabs")
   ) {
     setTimeout(async () => {
       await vscode.commands.executeCommand(
-        "viraTheme.showContrastedTabs",
+        "liraTheme.showContrastedTabs",
         getConfiguration("contrastedTabs") ?? false
       );
     }, 200);
@@ -1307,12 +982,12 @@ async function handleShadowsChange(
   event: vscode.ConfigurationChangeEvent
 ): Promise<void> {
   if (
-    isViraThemeActive() &&
-    event.affectsConfiguration("viraTheme.hidesShadows")
+    isLiraThemeActive() &&
+    event.affectsConfiguration("liraTheme.hidesShadows")
   ) {
     setTimeout(async () => {
       await vscode.commands.executeCommand(
-        "viraTheme.hidesShadows",
+        "liraTheme.hidesShadows",
         getConfiguration("hidesShadows") ?? false
       );
     }, 200);
@@ -1323,12 +998,12 @@ async function handleLineHighlightChange(
   event: vscode.ConfigurationChangeEvent
 ): Promise<void> {
   if (
-    isViraThemeActive() &&
-    event.affectsConfiguration("viraTheme.solidLineHighlight")
+    isLiraThemeActive() &&
+    event.affectsConfiguration("liraTheme.solidLineHighlight")
   ) {
     setTimeout(async () => {
       await vscode.commands.executeCommand(
-        "viraTheme.useSolidLineHighlight",
+        "liraTheme.useSolidLineHighlight",
         getConfiguration("solidLineHighlight") ?? false
       );
     }, 200);
@@ -1338,9 +1013,9 @@ async function handleLineHighlightChange(
 async function handleExplorerArrowsChange(
   event: vscode.ConfigurationChangeEvent
 ): Promise<void> {
-  if (event.affectsConfiguration("viraTheme.hidesExplorerArrows")) {
+  if (event.affectsConfiguration("liraTheme.hidesExplorerArrows")) {
     await vscode.commands.executeCommand(
-      "viraTheme.hideExplorerArrows",
+      "liraTheme.hideExplorerArrows",
       getConfiguration("hidesExplorerArrows")
     );
   }
@@ -1351,18 +1026,18 @@ async function handleIconThemeChange(
 ): Promise<void> {
   if (
     event.affectsConfiguration("workbench.iconTheme") &&
-    isViraIconThemeActive()
+    isLiraIconThemeActive()
   ) {
-    await vscode.commands.executeCommand("viraTheme.updateIconsAccent");
+    await vscode.commands.executeCommand("liraTheme.updateIconsAccent");
   }
 }
 
 async function handleOutlinedIconsChange(
   event: vscode.ConfigurationChangeEvent
 ): Promise<void> {
-  if (event.affectsConfiguration("viraTheme.useOutlinedIcons")) {
+  if (event.affectsConfiguration("liraTheme.useOutlinedIcons")) {
     await vscode.commands.executeCommand(
-      "viraTheme.useOutlinedIcons",
+      "liraTheme.useOutlinedIcons",
       getConfiguration("useOutlinedIcons")
     );
   }
@@ -1375,50 +1050,46 @@ export async function activate(
   // Register commands
   const commands = [
     vscode.commands.registerCommand(
-      "viraTheme.accentPicker",
+      "liraTheme.accentPicker",
       async () => await showAccentPicker(context)
     ),
-    vscode.commands.registerCommand("viraTheme.clearAccent", clearAccent),
+    vscode.commands.registerCommand("liraTheme.clearAccent", clearAccent),
     vscode.commands.registerCommand(
-      "viraTheme.updateAccent",
+      "liraTheme.updateAccent",
       updateColorCustomizations
     ),
     vscode.commands.registerCommand(
-      "viraTheme.showBorders",
+      "liraTheme.showBorders",
       updateColorCustomizations
     ),
     vscode.commands.registerCommand(
-      "viraTheme.showContrastedTabs",
+      "liraTheme.showContrastedTabs",
       updateColorCustomizations
     ),
     vscode.commands.registerCommand(
-      "viraTheme.useSolidLineHighlight",
+      "liraTheme.useSolidLineHighlight",
       updateColorCustomizations
     ),
     vscode.commands.registerCommand(
-      "viraTheme.hidesShadows",
+      "liraTheme.hidesShadows",
       updateColorCustomizations
     ),
     vscode.commands.registerCommand(
-      "viraTheme.updateIconsAccent",
+      "liraTheme.updateIconsAccent",
       async () => await updateIconsAccent(context)
     ),
     vscode.commands.registerCommand(
-      "viraTheme.hideExplorerArrows",
+      "liraTheme.hideExplorerArrows",
       async (hide: boolean) => await hideExplorerArrows(context, hide)
     ),
     vscode.commands.registerCommand(
-      "viraTheme.useOutlinedIcons",
+      "liraTheme.useOutlinedIcons",
       async (outlined: boolean) => await useOutlinedIcons(context, outlined)
-    ),
-    vscode.commands.registerCommand(
-      "viraTheme.licenseInputBox",
-      async () => await licenseInputBoxCommand(context)
     ),
   ];
 
   // Update version info
-  context.globalState.update("viraTheme.version", getPackageInfo().version);
+  context.globalState.update("liraTheme.version", getPackageInfo().version);
 
   // Setup configuration change listeners
   const configurationListeners = [
@@ -1436,38 +1107,35 @@ export async function activate(
   context.subscriptions.push(...commands, ...configurationListeners);
 
   // Handle new app install
-  const versionInfo = context.globalState.get("viraTheme.version");
+  const versionInfo = context.globalState.get("liraTheme.version");
   if (vscode.env.isNewAppInstall && versionInfo) {
-    context.globalState.update(versionInfo, getPackageInfo().version);
+    context.globalState.update("liraTheme.version", getPackageInfo().version);
   }
 
   // Initialize theme based on current settings
   if (getConfiguration("useOutlinedIcons") === true) {
     await vscode.commands.executeCommand(
-      "viraTheme.useOutlinedIcons",
+      "liraTheme.useOutlinedIcons",
       getConfiguration("useOutlinedIcons")
     );
   }
 
   if (getConfiguration("accent")) {
-    await vscode.commands.executeCommand("viraTheme.updateIconsAccent");
+    await vscode.commands.executeCommand("liraTheme.updateIconsAccent");
   }
 
   if (getConfiguration("hidesExplorerArrows") === false) {
     await vscode.commands.executeCommand(
-      "viraTheme.hideExplorerArrows",
+      "liraTheme.hideExplorerArrows",
       getConfiguration("hidesExplorerArrows")
     );
   }
 
-  // Initialize UI and licensing
+  // Initialize UI
   createStatusBarItem();
   await initializeColorCustomizations(context);
-  await initializeTrial(context);
-  await validateExistingLicense(context);
-  setupSecretListener(context);
 }
 
 export async function deactivate(): Promise<void> {
-  await setTrialContext(false);
+  // Extension cleanup if needed
 }

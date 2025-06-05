@@ -6,8 +6,10 @@
   "engines": {
     "vscode": "^1.100.0"
   },
+  "repository": "https://github.com/arcalumis/lira-free-theme",
   "categories": [
-    "Other"
+    "Other",
+    "Themes"
   ],
   "activationEvents": [],
   "main": "./out/extension.js",
@@ -15,7 +17,7 @@
     "commands": [
       {
         "command": "lira-free-theme.helloWorld",
-        "title": "Hello World"
+        "title": "Eat my shorts!"
       }
     ]
   },
@@ -28,14 +30,14 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.100.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "20.x",
+    "@types/vscode": "^1.100.0",
     "@typescript-eslint/eslint-plugin": "^8.31.1",
     "@typescript-eslint/parser": "^8.31.1",
-    "eslint": "^9.25.1",
-    "typescript": "^5.8.3",
     "@vscode/test-cli": "^0.0.10",
-    "@vscode/test-electron": "^2.5.2"
+    "@vscode/test-electron": "^2.5.2",
+    "eslint": "^9.25.1",
+    "typescript": "^5.8.3"
   }
 }
