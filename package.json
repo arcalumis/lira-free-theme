@@ -2,7 +2,7 @@
   "name": "lira-free-theme",
   "displayName": "Lira",
   "description": "A completely free and customizable dark theme for Visual Studio Code with beautiful syntax highlighting and extensive customization options.",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "publisher": "Lirasoft",
   "author": "Jean Baudrillard",
   "galleryBanner": {
@@ -165,6 +165,21 @@
         "command": "liraTheme.useOutlinedIcons",
         "title": "Toggle Outlined Icons",
         "category": "Lira"
+      },
+      {
+        "command": "liraTheme.showWelcome",
+        "title": "Show Welcome",
+        "category": "Lira"
+      },
+      {
+        "command": "liraTheme.openSettingsPanel",
+        "title": "Open Settings Panel",
+        "category": "Lira"
+      },
+      {
+        "command": "liraTheme.showStatusBarMenu",
+        "title": "Show Theme Options Menu",
+        "category": "Lira"
       }
     ],
     "themes": [
@@ -227,6 +242,16 @@
         "label": "Lira Carbon High Contrast",
         "path": "./src/themes/Lira-Theme-Carbon-High-Contrast.json",
         "uiTheme": "vs-dark"
+      },
+      {
+        "label": "Lira Nord",
+        "path": "./src/themes/Lira-Theme-Nord.json",
+        "uiTheme": "vs-dark"
+      },
+      {
+        "label": "Lira Nord High Contrast",
+        "path": "./src/themes/Lira-Theme-Nord-High-Contrast.json",
+        "uiTheme": "vs-dark"
       }
     ],
     "iconThemes": [
@@ -259,16 +284,24 @@
         "id": "lira-icons-carbon",
         "label": "Lira Icons Carbon",
         "path": "./src/themes/Lira-Icons-Carbon.json"
+      },
+      {
+        "id": "lira-icons-nord",
+        "label": "Lira Icons Nord",
+        "path": "./src/themes/Lira-Icons-Nord.json"
       }
     ]
   },
   "scripts": {
-    "vscode:prepublish": "pnpm run compile",
+    "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "pretest": "pnpm run compile && pnpm run lint",
+    "pretest": "npm run compile && npm run lint",
     "lint": "eslint src",
     "test": "vscode-test"
+  },
+  "dependencies": {
+    "jszip": "^3.10.1"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",

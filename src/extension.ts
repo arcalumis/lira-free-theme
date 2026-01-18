@@ -1,4 +1,12 @@
 import * as vscode from "vscode";
+import {
+  FOLDER_NAMES,
+  THEME_CONFIG,
+  STRINGS,
+  ThemeIconDefinition,
+  ThemeConfig,
+} from "./themeConfig";
+import { StatusBarMenu, SettingsPanelProvider } from "./settings";
 
 // Type definitions
 interface AccentOption {
@@ -7,241 +15,6 @@ interface AccentOption {
   iconPath: vscode.Uri | vscode.ThemeIcon;
 }
 
-interface ThemeIconDefinition {
-  iconPath: string;
-}
-
-interface ThemeConfig {
-  iconDefinitions: { [key: string]: ThemeIconDefinition };
-  hidesExplorerArrows?: boolean;
-}
-
-interface AccentColors {
-  [key: string]: string;
-}
-
-// Theme Configuration
-const FOLDER_NAMES = [
-  "vscode",
-  "gulp",
-  "node",
-  "images",
-  "js",
-  "css",
-  "sass",
-  "src",
-  "assets",
-  "git",
-  "github",
-  "test",
-  "dist",
-  "ci",
-  "nginx",
-  "types",
-  "docs",
-  "scripts",
-  "changesets",
-  "storybook",
-  "jest",
-  "locales",
-  "husky",
-  "turbo",
-  "app",
-  "next",
-  "netlify",
-  "server",
-  "public",
-  "gitlab",
-  "api",
-  "config",
-  "webpack",
-  "log",
-  "components",
-  "packages",
-  "intellij",
-  "nuxt",
-  "decorators",
-  "svg",
-  "wordpress",
-  "fonts",
-];
-
-const THEME_CONFIG = {
-  defaultVariant: "Teal",
-  defaultAccent: "Teal",
-  foldersStyles: ["filled", "outlined"],
-  accents: {
-    Teal: "#80CBC4",
-    Coral: "#E9A581",
-    White: "#FFFFFF",
-    Tomato: "#F85044",
-    Orange: "#FF7042",
-    Yellow: "#FFCF3D",
-    "Acid Lime": "#C6FF00",
-    Lime: "#39EA5F",
-    "Bright Teal": "#64FFDA",
-    Cyan: "#57D7FF",
-    Blue: "#5393FF",
-    Indigo: "#758AFF",
-    Purple: "#B54DFF",
-    Pink: "#FF669E",
-  },
-  colorCustomizations: {
-    accentForegrounds: [
-      "activityBarBadge.foreground",
-      "button.foreground",
-      "statusBarItem.remoteHoverForeground",
-    ],
-    shadowProperties: {
-      "widget.shadow": { value: "#000000", alpha: 0 },
-      "scrollbar.shadow": { value: "#000000", alpha: 0 },
-    },
-    lineHighlightProperties: {
-      "editor.lineHighlightBackground": { value: "#ffffff", alpha: 0.06 },
-      "editor.lineHighlightBorder": { value: "#ffffff", alpha: 0 },
-    },
-    contrastedTabsProperties: {
-      "editorGroupHeader.tabsBackground": { value: "#ffffff", alpha: 0.04 },
-      "tab.border": { value: "#ffffff", alpha: 0.005 },
-      "tab.inactiveBackground": { value: "#ffffff", alpha: 0.005 },
-    },
-    bordersProperties: {
-      "titleBar.border": { value: "#ffffff", alpha: 0.06 },
-      "statusBar.border": { value: "#ffffff", alpha: 0.06 },
-      "sideBar.border": { value: "#ffffff", alpha: 0.06 },
-      "sideBarSectionHeader.border": { value: "#ffffff", alpha: 0.06 },
-      "panel.border": { value: "#ffffff", alpha: 0.06 },
-      "activityBar.border": { value: "#ffffff", alpha: 0.06 },
-      "sideBarActivityBarTop.border": { value: "#ffffff", alpha: 0.06 },
-      "sideBarStickyScroll.border": { value: "#ffffff", alpha: 0.08 },
-    },
-    accentsProperties: {
-      "toolbar.activeBackground": { alpha: 0.15 },
-      "button.background": { alpha: 1 },
-      "button.hoverBackground": { alpha: 0.8 },
-      "extensionButton.separator": { alpha: 0.2 },
-      "extensionButton.background": { alpha: 0.08 },
-      "extensionButton.foreground": { alpha: 1 },
-      "extensionButton.hoverBackground": { alpha: 0.2 },
-      "extensionButton.prominentForeground": { alpha: 1 },
-      "extensionButton.prominentBackground": { alpha: 0.08 },
-      "extensionButton.prominentHoverBackground": { alpha: 0.2 },
-      "activityBarBadge.background": { alpha: 1 },
-      "activityBar.activeBorder": { alpha: 1 },
-      "activityBarTop.activeBorder": { alpha: 1 },
-      "list.inactiveSelectionIconForeground": { alpha: 1 },
-      "list.activeSelectionForeground": { alpha: 1 },
-      "list.inactiveSelectionForeground": { alpha: 1 },
-      "list.highlightForeground": { alpha: 1 },
-      "sash.hoverBorder": { alpha: 0.5 },
-      "list.activeSelectionIconForeground": { alpha: 1 },
-      "scrollbarSlider.activeBackground": { alpha: 0.5 },
-      "editorSuggestWidget.highlightForeground": { alpha: 1 },
-      "textLink.foreground": { alpha: 1 },
-      "progressBar.background": { alpha: 1 },
-      "pickerGroup.foreground": { alpha: 1 },
-      "tab.activeBorder": { alpha: 1 },
-      "notificationLink.foreground": { alpha: 1 },
-      "editorWidget.resizeBorder": { alpha: 1 },
-      "editorWidget.border": { alpha: 1 },
-      "settings.modifiedItemIndicator": { alpha: 1 },
-      "panelTitle.activeBorder": { alpha: 1 },
-      "breadcrumb.activeSelectionForeground": { alpha: 1 },
-      "menu.selectionForeground": { alpha: 1 },
-      "menubar.selectionForeground": { alpha: 1 },
-      "editor.findMatchBorder": { alpha: 1 },
-      "selection.background": { alpha: 0.25 },
-      "statusBarItem.remoteBackground": { alpha: 0.08 },
-      "statusBarItem.remoteHoverBackground": { alpha: 1 },
-      "statusBarItem.remoteForeground": { alpha: 1 },
-      "notebook.inactiveFocusedCellBorder": { alpha: 0.5 },
-      "commandCenter.activeBorder": { alpha: 0.5 },
-      "chat.slashCommandForeground": { alpha: 1 },
-      "chat.avatarForeground": { alpha: 1 },
-    },
-  },
-  accentableIcons: [
-    "_folder_open",
-    ...FOLDER_NAMES.map((name) => `_folder_${name}_open`),
-  ],
-  icons: {
-    theme: {
-      iconDefinitions: {
-        _folder_dark: { iconPath: "../icons/folders/filled/folder_dark.svg" },
-        _folder_light: { iconPath: "../icons/folders/filled/folder_light.svg" },
-        _folder_root_dark: {
-          iconPath: "../icons/folders/filled/folder_root_dark.svg",
-        },
-        _folder_root_light: {
-          iconPath: "../icons/folders/filled/folder_root_light.svg",
-        },
-        _folder_open: { iconPath: "../icons/folders/filled/folder_open.svg" },
-        _folder_root_open: {
-          iconPath: "../icons/folders/filled/folder_root_open.svg",
-        },
-        ...(Object.fromEntries(
-          FOLDER_NAMES.flatMap((name) => [
-            [
-              `_folder_${name}`,
-              { iconPath: `../icons/folders/filled/folder_${name}.svg` },
-            ],
-            [
-              `_folder_${name}_open`,
-              { iconPath: `../icons/folders/filled/folder_${name}_open.svg` },
-            ],
-          ])
-        ) as { [key: string]: ThemeIconDefinition }),
-      },
-    },
-  },
-  variantsIconsColors: {
-    Teal: "#4A616C",
-    Graphene: "#636363",
-    Palenight: "#686F93",
-    Ocean: "#373C4E",
-    Carbon: "#303236",
-    Deepforest: "#2E483C",
-  },
-  themeIconVariants: {
-    Teal: "lira-icons-teal",
-    Graphene: "lira-icons-graphene",
-    Palenight: "lira-icons-palenight",
-    Ocean: "lira-icons-ocean",
-    Carbon: "lira-icons-carbon",
-    Deepforest: "lira-icons-deepforest",
-  },
-  variantsIcons: [
-    "_folder_dark",
-    "_folder_light",
-    "_folder_root_dark",
-    "_folder_root_light",
-    ...FOLDER_NAMES.map((name) => `_folder_${name}`),
-  ],
-};
-
-// Localization strings
-const STRINGS = {
-  clear_accent: "Clear accent",
-  use_custom_accent: "Use custom accent",
-  activate: "Activate",
-  placeholders: {
-    enter_custom_accent: "Enter custom 6-digits HEX color",
-    select_accent: "Select the accent color to use",
-  },
-  accentButtonTooltip: "Set the accent color",
-  feedbacks: {
-    no_valid_color: {
-      title: "Only 6 or 8 digits hex colors",
-      message: "Please enter a valid 6 digits hex color",
-    },
-    invalidColorFormat: "Invalid hex color format",
-    invalidHexAlpha: "Alpha must be between 0 and 1",
-    no_accent: {
-      title: "",
-      message: "No accent found",
-    },
-  },
-};
 
 // Utility Functions
 function getConfiguration(key: string): any {
@@ -250,6 +23,23 @@ function getConfiguration(key: string): any {
 
 function slugify(text: string): string {
   return text.replace(/\s+/g, "-").toLowerCase();
+}
+
+// Debounce utility to prevent multiple rapid calls
+function debounce<T extends (...args: any[]) => any>(
+  fn: T,
+  delay: number
+): (...args: Parameters<T>) => void {
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
+  return (...args: Parameters<T>) => {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+    timeoutId = setTimeout(() => {
+      fn(...args);
+      timeoutId = null;
+    }, delay);
+  };
 }
 
 function isValidHexColor(color: string): boolean {
@@ -287,23 +77,30 @@ async function updateThemeFiles(
 ): Promise<void> {
   const themesPath = vscode.Uri.joinPath(
     vscode.Uri.file(context.extensionPath),
-    "./build/themes"
+    "./src/themes"
   );
   const files = await vscode.workspace.fs.readDirectory(themesPath);
 
-  for (const [fileName] of files) {
-    if (fileName.startsWith("Lira-Icons")) {
-      const filePath = vscode.Uri.joinPath(themesPath, fileName);
-      const fileData = await vscode.workspace.fs.readFile(filePath);
-      const themeContent = new TextDecoder().decode(fileData);
-      const themeObject = { ...JSON.parse(themeContent) } as ThemeConfig;
-      const updatedTheme = updater(themeObject);
-      const updatedData = new TextEncoder().encode(
-        JSON.stringify(updatedTheme)
-      );
-      await vscode.workspace.fs.writeFile(filePath, updatedData);
-    }
-  }
+  // Filter icon theme files and process in parallel
+  const iconThemeFiles = files
+    .filter(([fileName]) => fileName.startsWith("Lira-Icons"))
+    .map(([fileName]) => fileName);
+
+  await Promise.all(
+    iconThemeFiles.map(async (fileName) => {
+      try {
+        const filePath = vscode.Uri.joinPath(themesPath, fileName);
+        const fileData = await vscode.workspace.fs.readFile(filePath);
+        const themeContent = new TextDecoder().decode(fileData);
+        const themeObject = { ...JSON.parse(themeContent) } as ThemeConfig;
+        const updatedTheme = updater(themeObject);
+        const updatedData = new TextEncoder().encode(JSON.stringify(updatedTheme, null, 2));
+        await vscode.workspace.fs.writeFile(filePath, updatedData);
+      } catch (error) {
+        console.error(`Lira Theme: Failed to update ${fileName}`, error);
+      }
+    })
+  );
 }
 
 // Explorer Arrows Management
@@ -376,7 +173,7 @@ async function createCustomAccentIcons(
   } = THEME_CONFIG;
   const themesPath = vscode.Uri.joinPath(
     vscode.Uri.file(context.extensionPath),
-    "./build/themes"
+    "./src/themes"
   );
   const accentSuffix = `.accent.${customColor}.svg`;
   const previousCustomAccent = context.globalState.get(
@@ -461,9 +258,9 @@ async function updateIconsAccent(
 
 // Package Information
 function getPackageInfo(): any {
-  const extension = vscode.extensions.getExtension("lira.lira-free-theme");
+  const extension = vscode.extensions.getExtension("Lirasoft.lira-free-theme");
   if (!extension) {
-    throw new Error("Extension with ID lira.lira-free-theme not found");
+    throw new Error("Extension with ID Lirasoft.lira-free-theme not found");
   }
   return extension.packageJSON;
 }
@@ -617,7 +414,7 @@ async function showAccentPicker(
     const accentSlug = slugify(accentName);
     const iconPath = vscode.Uri.joinPath(
       vscode.Uri.file(context.extensionPath),
-      "./build",
+      "./src",
       "assets",
       `${accentSlug}.svg`
     );
@@ -792,77 +589,6 @@ async function updateColorCustomizations(): Promise<void> {
   await updateWorkbenchColors(newColorCustomizations);
 }
 
-function createStatusBarItem(): void {
-  const statusBarItem = vscode.window.createStatusBarItem(
-    vscode.StatusBarAlignment.Right,
-    -9999
-  );
-
-  const updateVisibility = () => {
-    if (statusBarItem) {
-      if (isLiraThemeActive() || isLiraIconThemeActive()) {
-        statusBarItem.show();
-      } else {
-        statusBarItem.hide();
-      }
-    }
-  };
-
-  const updateStatusBar = () => {
-    if (!statusBarItem) {
-      return;
-    }
-
-    const accentColor = getConfiguration("accent") ?? "Teal";
-    const customAccent = getConfiguration("customAccent");
-    const displayText = `$(paintcan) ${
-      customAccent ? "Custom accent" : accentColor
-    }`;
-
-    statusBarItem.text = displayText + " ";
-    statusBarItem.color =
-      customAccent ||
-      THEME_CONFIG.accents[accentColor as keyof typeof THEME_CONFIG.accents] ||
-      THEME_CONFIG.accents.Teal;
-    updateVisibility();
-
-    setTimeout(() => {
-      if (statusBarItem) {
-        statusBarItem.text = displayText;
-      }
-    }, 0);
-  };
-
-  const initialAccent = getConfiguration("accent") ?? "Teal";
-  statusBarItem.text = `$(paintcan) ${initialAccent}`;
-  statusBarItem.tooltip = "Set the accent color";
-  statusBarItem.command = "liraTheme.accentPicker";
-  statusBarItem.color =
-    THEME_CONFIG.accents[initialAccent as keyof typeof THEME_CONFIG.accents] ||
-    THEME_CONFIG.accents.Teal;
-  updateVisibility();
-
-  vscode.workspace.onDidChangeConfiguration((event) => {
-    const affectsTheme = [
-      "workbench.colorTheme",
-      "workbench.preferredLightColorTheme",
-      "workbench.preferredDarkColorTheme",
-      "workbench.preferredHighContrastColorTheme",
-      "workbench.preferredHighContrastLightColorTheme",
-      "window.autoDetectColorScheme",
-    ].some((setting) => event.affectsConfiguration(setting));
-
-    const affectsIcon = event.affectsConfiguration("workbench.iconTheme");
-    const affectsAccent =
-      event.affectsConfiguration("liraTheme.accent") ||
-      event.affectsConfiguration("liraTheme.customAccent");
-
-    if (affectsAccent || affectsTheme || affectsIcon) {
-      setTimeout(updateStatusBar, 200);
-    }
-  });
-}
-
 async function initializeColorCustomizations(
   context: vscode.ExtensionContext
 ): Promise<void> {
@@ -931,149 +657,264 @@ async function initializeColorCustomizations(
   });
 }
 
-// Configuration change handlers
-async function handleAccentChange(
-  event: vscode.ConfigurationChangeEvent
-): Promise<void> {
-  if (
-    event.affectsConfiguration("liraTheme.accent") ||
-    event.affectsConfiguration("liraTheme.customAccent")
-  ) {
-    setTimeout(async () => {
-      await vscode.commands.executeCommand("liraTheme.updateAccent");
-      await vscode.commands.executeCommand("liraTheme.updateIconsAccent");
-    }, 200);
-  }
+// Consolidated configuration change handler
+function createConfigurationChangeHandler(
+  context: vscode.ExtensionContext
+): (event: vscode.ConfigurationChangeEvent) => Promise<void> {
+  // Debounced handlers for color customization updates
+  const debouncedColorUpdate = debounce(async () => {
+    try {
+      await updateColorCustomizations();
+    } catch (error) {
+      console.error("Lira Theme: Failed to update color customizations", error);
+    }
+  }, 100);
+
+  const debouncedIconsUpdate = debounce(async () => {
+    try {
+      await updateIconsAccent(context);
+    } catch (error) {
+      console.error("Lira Theme: Failed to update icons accent", error);
+    }
+  }, 100);
+
+  // Theme-related settings that affect visibility/state
+  const themeSettings = [
+    "workbench.colorTheme",
+    "workbench.preferredLightColorTheme",
+    "workbench.preferredDarkColorTheme",
+    "workbench.preferredHighContrastColorTheme",
+    "workbench.preferredHighContrastLightColorTheme",
+    "window.autoDetectColorScheme",
+  ];
+
+  return async (event: vscode.ConfigurationChangeEvent) => {
+    const affectsTheme = themeSettings.some((s) => event.affectsConfiguration(s));
+    const affectsIconTheme = event.affectsConfiguration("workbench.iconTheme");
+    const affectsAccent =
+      event.affectsConfiguration("liraTheme.accent") ||
+      event.affectsConfiguration("liraTheme.customAccent");
+
+    // Handle accent color changes
+    if (affectsAccent) {
+      debouncedColorUpdate();
+      debouncedIconsUpdate();
+    }
+
+    // Handle theme changes
+    if (affectsTheme) {
+      debouncedColorUpdate();
+    }
+
+    // Handle icon theme switch to Lira
+    if (affectsIconTheme && isLiraIconThemeActive()) {
+      debouncedIconsUpdate();
+    }
+
+    // Handle Lira-specific settings (only when Lira theme is active)
+    if (
+      event.affectsConfiguration("liraTheme.showBorders") ||
+      event.affectsConfiguration("liraTheme.contrastedTabs") ||
+      event.affectsConfiguration("liraTheme.solidLineHighlight") ||
+      event.affectsConfiguration("liraTheme.hidesShadows")
+    ) {
+      if (isLiraThemeActive()) {
+        debouncedColorUpdate();
+      } else {
+        vscode.window.showWarningMessage(
+          "Lira Theme: UI settings only work when using a Lira color theme"
+        );
+      }
+    }
+
+    // Handle icon-related settings (immediate, no debounce needed)
+    if (event.affectsConfiguration("liraTheme.hidesExplorerArrows")) {
+      if (isLiraIconThemeActive()) {
+        try {
+          await hideExplorerArrows(context, getConfiguration("hidesExplorerArrows") ?? true);
+          vscode.window.showInformationMessage("Explorer arrows updated");
+        } catch (error) {
+          console.error("Lira Theme: Failed to update explorer arrows", error);
+        }
+      } else {
+        vscode.window.showWarningMessage(
+          "Lira Theme: Explorer arrows setting only works with Lira icon themes"
+        );
+      }
+    }
+
+    if (event.affectsConfiguration("liraTheme.useOutlinedIcons")) {
+      if (isLiraIconThemeActive()) {
+        try {
+          await useOutlinedIcons(context, getConfiguration("useOutlinedIcons") ?? false);
+          vscode.window.showInformationMessage(
+            "Icon style updated. You may need to reload VS Code to see changes."
+          );
+        } catch (error) {
+          console.error("Lira Theme: Failed to update outlined icons", error);
+          vscode.window.showErrorMessage("Failed to update icon style: " + error);
+        }
+      } else {
+        vscode.window.showWarningMessage(
+          "Lira Theme: Icon style setting only works with Lira icon themes"
+        );
+      }
+    }
+  };
 }
 
-async function handleBordersChange(
-  event: vscode.ConfigurationChangeEvent
-): Promise<void> {
-  if (
-    isLiraThemeActive() &&
-    event.affectsConfiguration("liraTheme.showBorders")
-  ) {
-    setTimeout(async () => {
-      await vscode.commands.executeCommand(
-        "liraTheme.showBorders",
-        getConfiguration("showBorders") ?? false
-      );
-    }, 200);
-  }
-}
+// Welcome screen for first-time users
+async function showWelcomeScreen(context: vscode.ExtensionContext): Promise<void> {
+  const panel = vscode.window.createWebviewPanel(
+    "liraWelcome",
+    "Welcome to Lira Theme",
+    vscode.ViewColumn.One,
+    { enableScripts: true }
+  );
 
-async function handleTabsChange(
-  event: vscode.ConfigurationChangeEvent
-): Promise<void> {
-  if (
-    isLiraThemeActive() &&
-    event.affectsConfiguration("liraTheme.contrastedTabs")
-  ) {
-    setTimeout(async () => {
-      await vscode.commands.executeCommand(
-        "liraTheme.showContrastedTabs",
-        getConfiguration("contrastedTabs") ?? false
-      );
-    }, 200);
-  }
-}
+  const accentColors = Object.entries(THEME_CONFIG.accents)
+    .map(([name, color]) => `<button class="accent-btn" data-accent="${name}" style="background: ${color};" title="${name}"></button>`)
+    .join("");
 
-async function handleShadowsChange(
-  event: vscode.ConfigurationChangeEvent
-): Promise<void> {
-  if (
-    isLiraThemeActive() &&
-    event.affectsConfiguration("liraTheme.hidesShadows")
-  ) {
-    setTimeout(async () => {
-      await vscode.commands.executeCommand(
-        "liraTheme.hidesShadows",
-        getConfiguration("hidesShadows") ?? false
-      );
-    }, 200);
-  }
-}
+  panel.webview.html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to Lira Theme</title>
+  <style>
+    body {
+      font-family: var(--vscode-font-family);
+      padding: 20px 40px;
+      color: var(--vscode-foreground);
+      background: var(--vscode-editor-background);
+      line-height: 1.6;
+    }
+    h1 { color: var(--vscode-textLink-foreground); margin-bottom: 8px; }
+    h2 { margin-top: 24px; margin-bottom: 12px; font-size: 1.2em; }
+    .subtitle { opacity: 0.8; margin-bottom: 24px; }
+    .section { margin: 20px 0; padding: 16px; background: var(--vscode-editor-inactiveSelectionBackground); border-radius: 8px; }
+    .accent-grid { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .accent-btn {
+      width: 32px; height: 32px; border-radius: 50%; border: 2px solid transparent;
+      cursor: pointer; transition: transform 0.15s, border-color 0.15s;
+    }
+    .accent-btn:hover { transform: scale(1.15); border-color: var(--vscode-focusBorder); }
+    .feature-list { list-style: none; padding: 0; }
+    .feature-list li { padding: 6px 0; display: flex; align-items: center; gap: 8px; }
+    .feature-list li::before { content: "✓"; color: var(--vscode-textLink-foreground); font-weight: bold; }
+    .btn {
+      padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer;
+      background: var(--vscode-button-background); color: var(--vscode-button-foreground);
+      font-size: 13px; margin-right: 8px; margin-top: 8px;
+    }
+    .btn:hover { background: var(--vscode-button-hoverBackground); }
+    .btn-secondary { background: var(--vscode-button-secondaryBackground); color: var(--vscode-button-secondaryForeground); }
+    .tip { font-size: 12px; opacity: 0.7; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <h1>Welcome to Lira Theme</h1>
+  <p class="subtitle">A beautiful, customizable dark theme for Visual Studio Code</p>
 
-async function handleLineHighlightChange(
-  event: vscode.ConfigurationChangeEvent
-): Promise<void> {
-  if (
-    isLiraThemeActive() &&
-    event.affectsConfiguration("liraTheme.solidLineHighlight")
-  ) {
-    setTimeout(async () => {
-      await vscode.commands.executeCommand(
-        "liraTheme.useSolidLineHighlight",
-        getConfiguration("solidLineHighlight") ?? false
-      );
-    }, 200);
-  }
-}
+  <div class="section">
+    <h2>Quick Start: Choose Your Accent Color</h2>
+    <p>Click any color to instantly apply it across your editor:</p>
+    <div class="accent-grid">${accentColors}</div>
+    <p class="tip">Tip: You can also use the status bar button or run "Lira: Select Accent Color" from the command palette.</p>
+  </div>
 
-async function handleExplorerArrowsChange(
-  event: vscode.ConfigurationChangeEvent
-): Promise<void> {
-  if (event.affectsConfiguration("liraTheme.hidesExplorerArrows")) {
-    await vscode.commands.executeCommand(
-      "liraTheme.hideExplorerArrows",
-      getConfiguration("hidesExplorerArrows")
-    );
-  }
-}
+  <div class="section">
+    <h2>Features</h2>
+    <ul class="feature-list">
+      <li>6 carefully crafted theme variants (Teal, Graphene, Palenight, Ocean, Deepforest, Carbon)</li>
+      <li>High contrast versions for accessibility</li>
+      <li>14 accent colors + custom hex color support</li>
+      <li>Matching icon themes that adapt to your accent color</li>
+      <li>Configurable borders, tabs, shadows, and line highlights</li>
+    </ul>
+  </div>
 
-async function handleIconThemeChange(
-  event: vscode.ConfigurationChangeEvent
-): Promise<void> {
-  if (
-    event.affectsConfiguration("workbench.iconTheme") &&
-    isLiraIconThemeActive()
-  ) {
-    await vscode.commands.executeCommand("liraTheme.updateIconsAccent");
-  }
-}
+  <div class="section">
+    <h2>Commands</h2>
+    <p>Access these from the Command Palette (Ctrl/Cmd + Shift + P):</p>
+    <ul class="feature-list">
+      <li>Lira: Select Accent Color</li>
+      <li>Lira: Toggle Borders</li>
+      <li>Lira: Toggle Contrasted Tabs</li>
+      <li>Lira: Toggle Outlined Icons</li>
+    </ul>
+  </div>
 
-async function handleOutlinedIconsChange(
-  event: vscode.ConfigurationChangeEvent
-): Promise<void> {
-  if (event.affectsConfiguration("liraTheme.useOutlinedIcons")) {
-    await vscode.commands.executeCommand(
-      "liraTheme.useOutlinedIcons",
-      getConfiguration("useOutlinedIcons")
-    );
-  }
+  <div style="margin-top: 24px;">
+    <button class="btn" onclick="closeAndApply()">Get Started</button>
+    <button class="btn btn-secondary" onclick="openSettings()">Open Settings</button>
+  </div>
+
+  <script>
+    const vscode = acquireVsCodeApi();
+
+    document.querySelectorAll('.accent-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        vscode.postMessage({ command: 'setAccent', accent: btn.dataset.accent });
+      });
+    });
+
+    function closeAndApply() {
+      vscode.postMessage({ command: 'close' });
+    }
+
+    function openSettings() {
+      vscode.postMessage({ command: 'openSettings' });
+    }
+  </script>
+</body>
+</html>`;
+
+  panel.webview.onDidReceiveMessage(async (message) => {
+    switch (message.command) {
+      case "setAccent":
+        await updateConfiguration("accent", message.accent);
+        break;
+      case "openSettings":
+        await vscode.commands.executeCommand("workbench.action.openSettings", "liraTheme");
+        break;
+      case "close":
+        panel.dispose();
+        break;
+    }
+  });
+
+  context.subscriptions.push(panel);
 }
 
 // Main activation function
 export async function activate(
   context: vscode.ExtensionContext
 ): Promise<void> {
+  // Create status bar menu (replaces old status bar item)
+  const statusBarMenu = new StatusBarMenu(context);
+  context.subscriptions.push(statusBarMenu.getStatusBarItem());
+
+  // Create settings panel provider
+  const settingsPanelProvider = new SettingsPanelProvider(context);
+
   // Register commands
   const commands = [
     vscode.commands.registerCommand(
       "liraTheme.accentPicker",
       async () => await showAccentPicker(context)
     ),
+    vscode.commands.registerCommand(
+      "liraTheme.openSettingsPanel",
+      () => settingsPanelProvider.show()
+    ),
     vscode.commands.registerCommand("liraTheme.clearAccent", clearAccent),
-    vscode.commands.registerCommand(
-      "liraTheme.updateAccent",
-      updateColorCustomizations
-    ),
-    vscode.commands.registerCommand(
-      "liraTheme.showBorders",
-      updateColorCustomizations
-    ),
-    vscode.commands.registerCommand(
-      "liraTheme.showContrastedTabs",
-      updateColorCustomizations
-    ),
-    vscode.commands.registerCommand(
-      "liraTheme.useSolidLineHighlight",
-      updateColorCustomizations
-    ),
-    vscode.commands.registerCommand(
-      "liraTheme.hidesShadows",
-      updateColorCustomizations
-    ),
+    vscode.commands.registerCommand("liraTheme.updateAccent", updateColorCustomizations),
+    vscode.commands.registerCommand("liraTheme.showBorders", updateColorCustomizations),
+    vscode.commands.registerCommand("liraTheme.showContrastedTabs", updateColorCustomizations),
+    vscode.commands.registerCommand("liraTheme.useSolidLineHighlight", updateColorCustomizations),
+    vscode.commands.registerCommand("liraTheme.hidesShadows", updateColorCustomizations),
     vscode.commands.registerCommand(
       "liraTheme.updateIconsAccent",
       async () => await updateIconsAccent(context)
@@ -1086,54 +927,50 @@ export async function activate(
       "liraTheme.useOutlinedIcons",
       async (outlined: boolean) => await useOutlinedIcons(context, outlined)
     ),
+    vscode.commands.registerCommand("liraTheme.showWelcome", async () => await showWelcomeScreen(context)),
   ];
 
-  // Update version info
-  context.globalState.update("liraTheme.version", getPackageInfo().version);
+  context.subscriptions.push(...commands);
 
-  // Setup configuration change listeners
-  const configurationListeners = [
-    vscode.workspace.onDidChangeConfiguration(handleAccentChange),
-    vscode.workspace.onDidChangeConfiguration(handleBordersChange),
-    vscode.workspace.onDidChangeConfiguration(handleTabsChange),
-    vscode.workspace.onDidChangeConfiguration(handleShadowsChange),
-    vscode.workspace.onDidChangeConfiguration(handleLineHighlightChange),
-    vscode.workspace.onDidChangeConfiguration(handleExplorerArrowsChange),
-    vscode.workspace.onDidChangeConfiguration(handleIconThemeChange),
-    vscode.workspace.onDidChangeConfiguration(handleOutlinedIconsChange),
-  ];
+  // Setup configuration change listener (StatusBarMenu handles its own updates)
+  const configChangeHandler = createConfigurationChangeHandler(context);
+  context.subscriptions.push(
+    vscode.workspace.onDidChangeConfiguration(configChangeHandler)
+  );
 
-  // Subscribe to events
-  context.subscriptions.push(...commands, ...configurationListeners);
+  // Check for first-time install
+  const currentVersion = getPackageInfo().version;
+  const storedVersion = context.globalState.get<string>("liraTheme.version");
+  const isFirstInstall = !storedVersion;
 
-  // Handle new app install
-  const versionInfo = context.globalState.get("liraTheme.version");
-  if (vscode.env.isNewAppInstall && versionInfo) {
-    context.globalState.update("liraTheme.version", getPackageInfo().version);
+  // Update stored version
+  await context.globalState.update("liraTheme.version", currentVersion);
+
+  // Show welcome screen for first-time users when Lira theme is active
+  if (isFirstInstall && (isLiraThemeActive() || isLiraIconThemeActive())) {
+    await showWelcomeScreen(context);
   }
 
-  // Initialize theme based on current settings
-  if (getConfiguration("useOutlinedIcons") === true) {
-    await vscode.commands.executeCommand(
-      "liraTheme.useOutlinedIcons",
-      getConfiguration("useOutlinedIcons")
-    );
-  }
+  // Initialize theme based on current settings (with error handling)
+  try {
+    if (getConfiguration("useOutlinedIcons") === true) {
+      await useOutlinedIcons(context, true);
+    }
 
-  if (getConfiguration("accent")) {
-    await vscode.commands.executeCommand("liraTheme.updateIconsAccent");
-  }
+    if (getConfiguration("accent")) {
+      await updateIconsAccent(context);
+    }
 
-  if (getConfiguration("hidesExplorerArrows") === false) {
-    await vscode.commands.executeCommand(
-      "liraTheme.hideExplorerArrows",
-      getConfiguration("hidesExplorerArrows")
-    );
-  }
+    if (getConfiguration("hidesExplorerArrows") === false) {
+      await hideExplorerArrows(context, false);
+    }
 
-  // Initialize UI
-  createStatusBarItem();
-  await initializeColorCustomizations(context);
+    // Initialize color customizations
+    await initializeColorCustomizations(context);
+  } catch (error) {
+    console.error("Lira Theme: Failed to initialize", error);
+    vscode.window.showWarningMessage("Lira Theme: Some settings could not be applied. Please try reloading the window.");
+  }
 }
 
 export async function deactivate(): Promise<void> {
